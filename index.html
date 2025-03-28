@@ -43,39 +43,39 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#api">API</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD">LCD</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD">LCD</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.__init__">__init__</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.__init__">__init__</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.backlight">backlight</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.backlight">backlight</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.blink">blink</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.blink">blink</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.clear_display">clear_display</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.clear_display">clear_display</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.clear_line">clear_line</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.clear_line">clear_line</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.cursor">cursor</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.cursor">cursor</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.display">display</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.display">display</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.home">home</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.home">home</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.lcd_read">lcd_read</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.lcd_read">lcd_read</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.left_to_right">left_to_right</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.left_to_right">left_to_right</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.move_to">move_to</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.move_to">move_to</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.print">print</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.print">print</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.print_at">print_at</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.print_at">print_at</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.scroll_left">scroll_left</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.scroll_left">scroll_left</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.scroll_mode">scroll_mode</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.scroll_mode">scroll_mode</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c-lcd.LCD.scroll_right">scroll_right</a>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.scroll_right">scroll_right</a>
     </li>
     </ul>
                 </li>
@@ -106,7 +106,7 @@
                 <h1 id="lcd-display-controller-reference">LCD Display Controller Reference</h1>
 <p><a href="https://github.com/JamesRandom/i2c-lcd-controller">Source code</a></p>
 <h2 id="example">Example</h2>
-<pre><code>from i2c-lcd import LCD
+<pre><code>from i2c_cd import LCD
 
 lcd = LCD()
 
@@ -123,7 +123,7 @@ lcd.print_at(2, 15, &quot;Hello world&quot;)
 
 
 
-<a id="lcd.i2c-lcd.LCD"></a>
+<a id="lcd.i2c_lcd.LCD"></a>
     <div class="doc doc-contents first">
 
 
@@ -152,7 +152,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.__init__" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.__init__" class="doc doc-heading">
             <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">i2c_address</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
 
 </h2>
@@ -216,7 +216,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.backlight" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.backlight" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">backlight</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
 
 </h2>
@@ -258,7 +258,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.blink" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.blink" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">blink</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
 
 </h2>
@@ -300,7 +300,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.clear_display" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.clear_display" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">clear_display</span><span class="p">()</span></code>
 
 </h2>
@@ -318,7 +318,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.clear_line" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.clear_line" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">clear_line</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span></code>
 
 </h2>
@@ -363,7 +363,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.cursor" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.cursor" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">cursor</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
 
 </h2>
@@ -405,7 +405,7 @@ functions to display text, turn the display on and off, etc.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.display" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.display" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">display</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
 
 </h2>
@@ -449,7 +449,7 @@ visible when the display is turned on again).</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.home" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.home" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">home</span><span class="p">()</span></code>
 
 </h2>
@@ -468,7 +468,7 @@ the display.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.lcd_read" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.lcd_read" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">lcd_read</span><span class="p">(</span><span class="n">register</span><span class="p">)</span></code>
 
 </h2>
@@ -477,8 +477,13 @@ the display.</p>
     <div class="doc doc-contents ">
 
         <p>Read a data byte from a register in the LCD controller.</p>
-<p><strong>NOTE:</strong> Not currently working.</p>
 
+
+<details class="note" open>
+  <summary>NOTE</summary>
+  <p>Not currently working as expected. Haven't spent any time
+investigating, as I don't have a use for it at the moment.</p>
+</details>
 
 <table class="field-list">
   <colgroup>
@@ -534,7 +539,7 @@ the display.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.left_to_right" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.left_to_right" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">left_to_right</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
 
 </h2>
@@ -577,7 +582,7 @@ will be written right-to-left.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.move_to" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.move_to" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">move_to</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span></code>
 
 </h2>
@@ -630,7 +635,7 @@ will be written right-to-left.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.print" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.print" class="doc doc-heading">
             <code class="highlight language-python"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code>
 
 </h2>
@@ -672,7 +677,7 @@ will be written right-to-left.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.print_at" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.print_at" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">print_at</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></code>
 
 </h2>
@@ -730,7 +735,7 @@ will be written right-to-left.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.scroll_left" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.scroll_left" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">scroll_left</span><span class="p">(</span><span class="n">count</span><span class="p">)</span></code>
 
 </h2>
@@ -774,7 +779,7 @@ description of <code>scroll_mode()</code> for more information.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.scroll_mode" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.scroll_mode" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">scroll_mode</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
 
 </h2>
@@ -824,7 +829,7 @@ increment/decrement mode.</p>
 <div class="doc doc-object doc-function">
 
 
-<h2 id="lcd.i2c-lcd.LCD.scroll_right" class="doc doc-heading">
+<h2 id="lcd.i2c_lcd.LCD.scroll_right" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">scroll_right</span><span class="p">(</span><span class="n">count</span><span class="p">)</span></code>
 
 </h2>
@@ -914,5 +919,5 @@ description of <code>scroll_mode()</code> for more information.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-28 22:58:13.859370+00:00
+Build Date UTC : 2025-03-28 23:08:04.533563+00:00
 -->
