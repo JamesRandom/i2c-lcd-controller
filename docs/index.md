@@ -5,7 +5,7 @@
 ## Example
 
 ```{python}
-from i2c_cd import LCD
+from i2c_lcd import LCD
 
 lcd = LCD()
 
