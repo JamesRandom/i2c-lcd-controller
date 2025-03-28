@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>LCD Display Controller</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "LCD API Reference";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> LCD Display Controller
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">LCD API Reference</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD">LCD</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.backlight">backlight</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.blink">blink</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.clear_display">clear_display</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.clear_line">clear_line</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.cursor">cursor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.display">display</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.home">home</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.lcd_read">lcd_read</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.left_to_right">left_to_right</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.move_to">move_to</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.print">print</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.print_at">print_at</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.scroll_left">scroll_left</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.scroll_mode">scroll_mode</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#lcd.lcd.LCD.scroll_right">scroll_right</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">LCD Display Controller</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">LCD API Reference</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="lcd-api-reference">LCD API Reference</h1>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<a id="lcd.lcd.LCD"></a>
+    <div class="doc doc-contents first">
+
+
+        <p>Interfaces to the LCD driver via I2C and provides a set of high-level user
+functions to display text, turn the display on and off, etc.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>size</code></b>
+                  (<code><span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]</code>, default:
+                      <code>(20, 4)</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>A tuple of character width and number of lines in the display.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>i2c_address</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>32</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The address of the display on the I2C bus.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>i2c_bus</code></b>
+                  (<code><span title="int">int</span> | <span title="str">str</span></code>, default:
+                      <code>1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The I2C bus that the device is connected to.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.backlight" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">backlight</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn the backlight on or off.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>on</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If set to True, the backlight will be on.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.blink" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">blink</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn the blinking character cursor on or off.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>on</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If set to True, blinking will be on.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.clear_display" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear_display</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Clear the display.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.clear_line" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">clear_line</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Erase the contents of the current line. Does not change the cursor position.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>character</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39; &#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The character to use to overwrite the current content.
+       Defaults to a space.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.cursor" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cursor</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn the underline cursor on or off.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>on</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If set to True, the cursor will be on.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.display" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">display</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn the display on or off.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>on</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If set to True, the display will be on. Otherwise, the
+display will be blanked. (The data is preserved and will be
+visible when the display is turned on again).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.home" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">home</span><span class="p">()</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the cursor to the home position (0, 0) and under any shifts of
+the display.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.lcd_read" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">lcd_read</span><span class="p">(</span><span class="n">register</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read a data byte from a register in the LCD controller.</p>
+<p><strong>NOTE:</strong> Not currently working.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>register</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Selects either the instruction or data register.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="int">int</span></code>
+              –
+              <div class="doc-md-description">
+                <p>A byte of data from the controller.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.left_to_right" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">left_to_right</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set text insertion direction.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>on</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If True, text will be written left-to-right. If False, then text
+will be written right-to-left.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.move_to" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">move_to</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Set the cursor to a given position.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>line</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The line number to move to. Line numbers start from 0.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>position</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The character position to move to, starting from 0.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>        <p>Raises:
+    ValueError: If either the line number or character position are out
+                of range.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.print" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Write text to the display.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>s</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The string to write.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.print_at" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">print_at</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print text at a specified location. Just a shortcut for move and print.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>line</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The line number to write to (lines are numbered from 0).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>position</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The character position in the line to start at.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>s</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The string to write.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.scroll_left" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scroll_left</span><span class="p">(</span><span class="n">count</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Scroll the display right by the specified number of places. See the
+description of <code>scroll_mode()</code> for more information.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>count</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of character positions to scroll. The text wraps round
+   at the ends of lines.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.scroll_mode" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scroll_mode</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Turn on scrolling mode for text entry. When this is one, then new
+characters are entered at the cursor position and the existing text is
+shifted left (or right, depending on the setting of left-to-right text mode).</p>
+<p>Note that the entire display is shifted, not just the current line. Text
+shifted off either end of the line wraps around to the previous/next
+line. For a four-line display, this results in some odd effects because,
+for example, the end of the first line wraps to the start of the third
+line.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>on</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If True, turn on scroll mode. Otherwise use cursor
+increment/decrement mode.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="lcd.lcd.LCD.scroll_right" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scroll_right</span><span class="p">(</span><span class="n">count</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Scroll the display right by the specified number of places. See the
+description of <code>scroll_mode()</code> for more information.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>count</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Number of character positions to scroll. The text wrap round
+   at the ends of lines.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2025-03-28 22:20:22.904411+00:00
+-->
