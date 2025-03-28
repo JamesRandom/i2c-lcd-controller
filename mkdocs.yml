@@ -1,0 +1,10 @@
+site_name: LCD Display Controller
+
+theme:
+  name: readthedocs
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - LCD API Reference: index.md
