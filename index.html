@@ -55,7 +55,11 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="api/">LCD API Reference</a>
+                <li class="toctree-l1"><a class="reference internal" href="api/">LCD API</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="" href="https://github.com/JamesRandom/i2c-lcd-controller">Source code</a>
                 </li>
               </ul>
       </div>
@@ -87,13 +91,13 @@ module, that uses the Hitachi HD44780 (or a compatible) chipset.</p>
 <p>This code assumes that the LCD is connected via an I<sup>2</sup>C interface, for example
 the the <a href="https://www.dfrobot.com/product-590.html">DFRobot 20x4 display module</a>
 and similar products.</p>
-<p>The code was written to be used with a Raspberry Pi but should be compatible
+<p>The code was written to be used with a Raspberry Pi. It should be compatible
 with other microcontrollers such as Arduino, but this has not been tested.</p>
-<p>If you are looking for something more flexible and fully functional, then take a
-look at <a href="https://rplcd.readthedocs.io/">RPLCD</a>. (I haven't tried this but I
-probably would have used it instead of writing my own code if I had seen it
-sooner.)</p>
-<p><a href="https://github.com/JamesRandom/i2c-lcd-controller">Source code</a></p>
+<p>It turns out there are lots of Python implementations of LCD controllers, of
+varying degrees of completeness. If you are looking for something more flexible
+and fully functional, then take a look at
+<a href="https://rplcd.readthedocs.io/">RPLCD</a>. I haven't tried this but I probably
+would have used it instead of writing my own code, if I had seen it sooner.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>Simple API</li>
@@ -194,7 +198,7 @@ order to latch the data into the controller.</p>
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="api/" class="btn btn-neutral float-right" title="LCD API Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="api/" class="btn btn-neutral float-right" title="LCD API">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -237,5 +241,5 @@ order to latch the data into the controller.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-29 15:49:50.950563+00:00
+Build Date UTC : 2025-03-29 15:56:42.092511+00:00
 -->
