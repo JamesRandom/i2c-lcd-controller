@@ -7,15 +7,14 @@ This code assumes that the LCD is connected via an I<sup>2</sup>C interface, for
 the the [DFRobot 20x4 display module](https://www.dfrobot.com/product-590.html)
 and similar products.
 
-The code was written to be used with a Raspberry Pi but should be compatible
+The code was written to be used with a Raspberry Pi. It should be compatible
 with other microcontrollers such as Arduino, but this has not been tested.
 
-If you are looking for something more flexible and fully functional, then take a
-look at [RPLCD](https://rplcd.readthedocs.io/). (I haven't tried this but I
-probably would have used it instead of writing my own code if I had seen it
-sooner.)
-
-[Source code](https://github.com/JamesRandom/i2c-lcd-controller)
+It turns out there are lots of Python implementations of LCD controllers, of
+varying degrees of completeness. If you are looking for something more flexible
+and fully functional, then take a look at
+[RPLCD](https://rplcd.readthedocs.io/). I haven't tried this but I probably
+would have used it instead of writing my own code, if I had seen it sooner.
 
 
 ## Features

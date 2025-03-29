@@ -8,4 +8,5 @@ plugins:
 
 nav:
   - Overview: index.md
-  - LCD API Reference: api.md
+  - LCD API: api.md
+  - Source code: https://github.com/JamesRandom/i2c-lcd-controller
