@@ -3,7 +3,7 @@
 This module allows a Python program to control a liquid crystal display (LCD)
 module, that uses the Hitachi HD44780 (or a compatible) chipset.
 
-This code assumes that the LCD is connected via an I2C interface, for example
+This code assumes that the LCD is connected via an I<sup>2</sup>C interface, for example
 the the [DFRobot 20x4 display module](https://www.dfrobot.com/product-590.html)
 and similar products.
 
@@ -30,7 +30,7 @@ sooner.)
   * clearing display
   * clearing a single line
 
-### To do
+**To do list:**
 
 * Use a single cursor mode setting to switch between underline, blink and no
   cursor
@@ -41,6 +41,21 @@ sooner.)
   enable more efficient vertical and horizontal scrolling of text (including
   scrolling single lines)
 * Add support for custom characters
+
+## Installation
+
+You can install from the GitHub repository. for example:
+
+```bash
+$ pip install git+https://github.com/JamesRandom/i2c-lcd-controller.git
+```
+
+Alternatively, you can clone the repository and install from source:
+
+```bash
+$ git clone https://github.com/JamesRandom/i2c-lcd-controller.git
+$ pip install ./i2c-lcd-controller
+```
 
 
 ## Example
@@ -67,19 +82,27 @@ lcd.backlight(False)
 
 ## Hardware
 
-The output pins on the PCA8574 I2C expander port are connected to the to
+The output pins on the PCA8574 I<sup>2</sup>C expander port are connected to the
 control and data bits on the HD44780U LCD display controller as follows:
 
-| I2C Pin | LCD Controller Function                                 |
-| ------- | ------------------------------------------------------- |
-| 0       | RS (register select: 0 for instructions, 1 for data)    |
-| 1       | R/Ŵ                                                     |
-| 2       | Enable (pulse this to transfer data to/from controller) |
-| 3       | Backlight control (1 to turn it on)                     |
-| 7:4     | Data bits                                               |
+| Expander Port Pin | LCD Controller Function                                 |
+| ----------------- | ------------------------------------------------------- |
+| 0                 | RS (register select: 0 for instructions, 1 for data)    |
+| 1                 | R/W̅                                                     |
+| 2                 | Enable (pulse this to transfer data to/from controller) |
+| 3                 | Backlight control (1 to turn it on)                     |
+| 7:4               | Data bits                                               |
 
-These pins are controlled by writing a byte to the I2C address of the port
-expander.
+These pins are controlled by writing a byte with the signal values to the I<sup>2</sup>C
+address of the port expander.
+
+In order to write a value to the LCD controller, two writes to the I<sup>2</sup>C interface
+are required: once with the Enable bit high and then with the Enable bit low in
+order to latch the data into the controller.
+
+To write a byte to the LCD controller, two four bit values have to be written
+(high-order bits first). So this requires a total of four I<sup>2</sup>C writes.
+
 
 ### Datasheets
 
