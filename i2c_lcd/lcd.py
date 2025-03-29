@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright (c) 2025 James Packer. All rights reserved.
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -44,6 +43,7 @@ Raspberry Pi.
 # cSpell:ignore  smbus DDRAM CGRAM
 # cSpell:enableCompoundWords
 
+from __future__ import annotations
 
 from enum import IntEnum
 from logging import debug, warning
@@ -57,6 +57,11 @@ class LCD:
     """
     The LCD class interfaces to the LCD driver via I2C and provides a set of high-level user
     functions to display text, turn the display on and off, etc.
+
+    Args:
+        size: A tuple of character width and number of lines in the display.
+        i2c_address: The address of the display on the I2C bus.
+        i2c_bus: The I2C bus that the device is connected to.
     """
 
     class _Commands(IntEnum):
@@ -144,14 +149,8 @@ class LCD:
         i2c_address: int = 0x20,
         i2c_bus: int | str = 1,
     ):
-        """
-        Initialise LCD controller to default state.
+        # Initialise LCD controller to default state.
 
-        Args:
-            size: A tuple of character width and number of lines in the display.
-            i2c_address: The address of the display on the I2C bus.
-            i2c_bus: The I2C bus that the device is connected to.
-        """
         # Device parameters
         self._display_size = size
         self._i2c_bus = i2c_bus
@@ -637,77 +636,3 @@ class LCD:
                 value=data,
             )
 
-
-if __name__ == "__main__":
-
-    # Run some tests
-
-    lcd = LCD()
-    print("\nLCD test\n")
-    lcd.clear_display()
-    lcd.move_to(0, 5)
-    lcd.print("Hello world")
-    lcd.move_to(1, 5)
-    lcd.print("Hello ")
-    lcd.left_to_right(False)
-    lcd.print_at(1, 15, "world")
-    lcd.left_to_right(True)
-
-    lcd.left_to_right(False)
-    lcd.move_to(2, 15)
-    lcd.print("Hello world")
-    lcd.left_to_right(True)
-    lcd.move_to(3, 5)
-    sleep(1)
-    lcd.scroll_left(5)
-    sleep(1)
-    lcd.print("Hello world")
-    sleep(1)
-    lcd.scroll_right(3)
-
-    lcd.move_to(0, 5)
-    # print(f"Read: {lcd.lcd_read(0):09_b}")
-    # print(f"** Read: {lcd.lcd_read(1):09_b}")
-    lcd.clear_line()
-    lcd.print("Hello world")
-
-    lcd.move_to(1, 10)
-    # Test the various display mode controls
-    sleep(1)
-    lcd.blink(True)
-    sleep(1)
-    lcd.cursor(True)
-    sleep(1)
-    lcd.blink(False)
-    sleep(1)
-    lcd.cursor(False)
-    sleep(1)
-    lcd.display(False)
-    sleep(1)
-    lcd.backlight(False)
-    sleep(1)
-    lcd.backlight(True)
-    sleep(1)
-
-    # Test display shifting
-    lcd.clear_display()
-    lcd.home()
-    lcd.print("+")
-    lcd.print_at(0, 2, "111 Line 111")
-    lcd.print_at(1, 3, "2222 Line 2222")
-    lcd.print_at(2, 4, "33333 Line 33333")
-    lcd.print_at(3, 5, "444444 Line 444444")
-    sleep(1)
-    lcd.display(True)
-    sleep(5)
-    lcd.scroll_left(10)
-    sleep(5)
-    lcd.scroll_right(10)
-    sleep(5)
-    lcd.scroll_right(10)
-    sleep(5)
-
-    # Turn off the backlight before exiting
-    sleep(20)
-    lcd.display(False)
-    lcd.backlight(False)

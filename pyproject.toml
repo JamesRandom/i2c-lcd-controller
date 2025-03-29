@@ -1,0 +1,37 @@
+[project]
+
+name = "i2c-lcd"
+description = "A Python interface to an LCD display module connected via an I2C port expander"
+version = "0.1.0"
+readme = "README.md"
+license = "0BSD"
+dependencies = [
+    "smbus2==0.5.0"
+]
+keywords = ["LCD", "display", "I2C", "Raspberry Pi", "HD44780", "Hitachi", "PCA8574"]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Operating System :: POSIX :: Linux",
+    "Topic :: System :: Hardware :: Hardware Drivers"
+]
+
+[tool.setuptools]
+
+packages = ["i2c_lcd"]
+
+[project.urls]
+
+documentation = "https://jamesrandom.github.io/i2c-lcd-controller/"
+repository = "https://github.com/JamesRandom/i2c-lcd-controller"
+
+[build-system]
+
+requires = [
+    "setuptools"
+]
+build-backend = "setuptools.build_meta"
