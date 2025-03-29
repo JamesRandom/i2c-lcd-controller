@@ -7,4 +7,5 @@ plugins:
   - mkdocstrings
 
 nav:
-  - LCD API Reference: index.md
+  - Overview: index.md
+  - LCD API Reference: api.md
