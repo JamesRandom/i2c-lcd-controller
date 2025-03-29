@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "LCD API Reference";
+        var mkdocs_page_name = "Overview";
         var mkdocs_page_input_path = "index.md";
         var mkdocs_page_url = null;
       </script>
@@ -37,47 +37,25 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">LCD API Reference</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Overview</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#features">Features</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#example">Example</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#api">API</a>
+    <li class="toctree-l2"><a class="reference internal" href="#hardware">Hardware</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#datasheets">Datasheets</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD">LCD</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.__init__">__init__</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.backlight">backlight</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.blink">blink</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.clear_display">clear_display</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.clear_line">clear_line</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.cursor">cursor</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.display">display</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.home">home</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.lcd_read">lcd_read</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.left_to_right">left_to_right</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.move_to">move_to</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.print">print</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.print_at">print_at</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.scroll_left">scroll_left</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.scroll_mode">scroll_mode</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#lcd.i2c_lcd.LCD.scroll_right">scroll_right</a>
+        </ul>
     </li>
     </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="api/">LCD API Reference</a>
                 </li>
               </ul>
       </div>
@@ -94,7 +72,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">LCD API Reference</li>
+      <li class="breadcrumb-item active">Overview</li>
     <li class="wy-breadcrumbs-aside">
     </li>
   </ul>
@@ -103,8 +81,51 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="lcd-display-controller-reference">LCD Display Controller Reference</h1>
+                <h1 id="lcd-display-controller">LCD Display Controller</h1>
+<p>This module allows a Python program to control a liquid crystal display (LCD)
+module, that uses the Hitachi HD44780 (or a compatible) chipset.</p>
+<p>This code assumes that the LCD is connected via an I<sup>2</sup>C interface, for example
+the the <a href="https://www.dfrobot.com/product-590.html">DFRobot 20x4 display module</a>
+and similar products.</p>
+<p>The code was written to be used with a Raspberry Pi but should be compatible
+with other microcontrollers such as Arduino, but this has not been tested.</p>
+<p>If you are looking for something more flexible and fully functional, then take a
+look at <a href="https://rplcd.readthedocs.io/">RPLCD</a>. (I haven't tried this but I
+probably would have used it instead of writing my own code if I had seen it
+sooner.)</p>
 <p><a href="https://github.com/JamesRandom/i2c-lcd-controller">Source code</a></p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Simple API</li>
+<li>Support for:</li>
+<li>printing text at any location</li>
+<li>left-to-right and right-to-left printing</li>
+<li>turn display and backlight on/off</li>
+<li>select cursor type</li>
+<li>scroll display left/right</li>
+<li>clearing display</li>
+<li>clearing a single line</li>
+</ul>
+<p><strong>To do list:</strong></p>
+<ul>
+<li>Use a single cursor mode setting to switch between underline, blink and no
+  cursor</li>
+<li>Support newline characters in text (and maybe an explicit newline method)</li>
+<li>Cache the display contents in a framebuffer so only changes to the content
+  need to be written to the display</li>
+<li>With that, could make the display a window onto a larger virtual screen to
+  enable more efficient vertical and horizontal scrolling of text (including
+  scrolling single lines)</li>
+<li>Add support for custom characters</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>You can install from the GitHub repository. for example:</p>
+<pre><code class="language-bash">$ pip install git+https://github.com/JamesRandom/i2c-lcd-controller.git
+</code></pre>
+<p>Alternatively, you can clone the repository and install from source:</p>
+<pre><code class="language-bash">$ git clone https://github.com/JamesRandom/i2c-lcd-controller.git
+$ pip install ./i2c-lcd-controller
+</code></pre>
 <h2 id="example">Example</h2>
 <pre><code>from i2c_lcd import LCD
 
@@ -113,773 +134,68 @@ lcd = LCD()
 lcd.clear_display()
 lcd.move_to(0, 5)
 lcd.print(&quot;Hello world&quot;)
+
+# Right to left text
 lcd.left_to_right(False)
 lcd.print_at(2, 15, &quot;Hello world&quot;)
+lcd.left_to_right(True)
+
+# Turn off display
+sleep(5)
+lcd.display(False)
+lcd.backlight(False)
 </code></pre>
-<h2 id="api">API</h2>
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<a id="lcd.i2c_lcd.LCD"></a>
-    <div class="doc doc-contents first">
-
-
-        <p>The LCD class interfaces to the LCD driver via I2C and provides a set of high-level user
-functions to display text, turn the display on and off, etc.</p>
-
-
-
-
-
-
-
-
-
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">i2c_address</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">i2c_bus</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Initialise LCD controller to default state.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>size</code></b>
-                  (<code><span title="tuple">tuple</span>[<span title="int">int</span>, <span title="int">int</span>]</code>, default:
-                      <code>(20, 4)</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>A tuple of character width and number of lines in the display.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>i2c_address</code></b>
-                  (<code><span title="int">int</span></code>, default:
-                      <code>32</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>The address of the display on the I2C bus.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>i2c_bus</code></b>
-                  (<code><span title="int">int</span> | <span title="str">str</span></code>, default:
-                      <code>1</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>The I2C bus that the device is connected to.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
+<h2 id="hardware">Hardware</h2>
+<p>The output pins on the PCA8574 I<sup>2</sup>C expander port are connected to the
+control and data bits on the HD44780U LCD display controller as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Expander Port Pin</th>
+<th>LCD Controller Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>RS (register select: 0 for instructions, 1 for data)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>R/W̅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Enable (pulse this to transfer data to/from controller)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Backlight control (1 to turn it on)</td>
+</tr>
+<tr>
+<td>7:4</td>
+<td>Data bits</td>
+</tr>
+</tbody>
 </table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.backlight" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">backlight</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Turn the backlight on or off.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>on</code></b>
-                  (<code><span title="bool">bool</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>If set to True, the backlight will be on.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.blink" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">blink</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Turn the blinking character cursor on or off.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>on</code></b>
-                  (<code><span title="bool">bool</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>If set to True, blinking will be on.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.clear_display" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">clear_display</span><span class="p">()</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Clear the display.</p>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.clear_line" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">clear_line</span><span class="p">(</span><span class="n">character</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Erase the contents of the current line. Does not change the cursor position.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>character</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39; &#39;</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>The character to use to overwrite the current content.
-       Defaults to a space.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.cursor" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">cursor</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Turn the underline cursor on or off.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>on</code></b>
-                  (<code><span title="bool">bool</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>If set to True, the cursor will be on.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.display" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">display</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Turn the display on or off.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>on</code></b>
-                  (<code><span title="bool">bool</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>If set to True, the display will be on. Otherwise, the
-display will be blanked. (The data is preserved and will be
-visible when the display is turned on again).</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.home" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">home</span><span class="p">()</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Return the cursor to the home position (0, 0) and under any shifts of
-the display.</p>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.lcd_read" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">lcd_read</span><span class="p">(</span><span class="n">register</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Read a data byte from a register in the LCD controller.</p>
-
-
-<details class="note" open>
-  <summary>NOTE</summary>
-  <p>Not currently working as expected. Haven't spent any time
-investigating, as I don't have a use for it at the moment.</p>
-</details>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>register</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Selects either the instruction or data register.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="int">int</span></code>
-              –
-              <div class="doc-md-description">
-                <p>A byte of data from the controller.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.left_to_right" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">left_to_right</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Set text insertion direction.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>on</code></b>
-                  (<code><span title="bool">bool</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>If True, text will be written left-to-right. If False, then text
-will be written right-to-left.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.move_to" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">move_to</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Set the cursor to a given position.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>line</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The line number to move to. Line numbers start from 0.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>position</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The character position to move to, starting from 0.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>        <p>Raises:
-    ValueError: If either the line number or character position are out
-                of range.</p>
-
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.print" class="doc doc-heading">
-            <code class="highlight language-python"><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Write text to the display.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>s</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The string to write.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.print_at" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">print_at</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Print text at a specified location. Just a shortcut for move and print.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>line</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The line number to write to (lines are numbered from 0).</p>
-              </div>
-            </li>
-            <li>
-              <b><code>position</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The character position in the line to start at.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>s</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>The string to write.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.scroll_left" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scroll_left</span><span class="p">(</span><span class="n">count</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Scroll the display right by the specified number of places. See the
-description of <code>scroll_mode()</code> for more information.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>count</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Number of character positions to scroll. The text wraps round
-   at the ends of lines.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.scroll_mode" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scroll_mode</span><span class="p">(</span><span class="n">on</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Turn on scrolling mode for text entry. When this is one, then new
-characters are entered at the cursor position and the existing text is
-shifted left (or right, depending on the setting of left-to-right text mode).</p>
-<p>Note that the entire display is shifted, not just the current line. Text
-shifted off either end of the line wraps around to the previous/next
-line. For a four-line display, this results in some odd effects because,
-for example, the end of the first line wraps to the start of the third
-line.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>on</code></b>
-                  (<code><span title="bool">bool</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>If True, turn on scroll mode. Otherwise use cursor
-increment/decrement mode.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="lcd.i2c_lcd.LCD.scroll_right" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">scroll_right</span><span class="p">(</span><span class="n">count</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Scroll the display right by the specified number of places. See the
-description of <code>scroll_mode()</code> for more information.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>count</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Number of character positions to scroll. The text wrap round
-   at the ends of lines.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div>
+<p>These pins are controlled by writing a byte with the signal values to the I<sup>2</sup>C
+address of the port expander.</p>
+<p>In order to write a value to the LCD controller, two writes to the I<sup>2</sup>C interface
+are required: once with the Enable bit high and then with the Enable bit low in
+order to latch the data into the controller.</p>
+<p>To write a byte to the LCD controller, two four bit values have to be written
+(high-order bits first). So this requires a total of four I<sup>2</sup>C writes.</p>
+<h3 id="datasheets">Datasheets</h3>
+<ul>
+<li><a href="https://cdn-shop.adafruit.com/datasheets/HD44780.pdf">HD44780U Dot Matrix Liquid Crystal Display Controller/Driver</a></li>
+<li><a href="https://www.nxp.com/docs/en/data-sheet/PCA8574_PCA8574A.pdf">PCA8574/74A Remote 8-bit I/O expander for I2C-bus</a></li>
+</ul>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="api/" class="btn btn-neutral float-right" title="LCD API Reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -902,6 +218,8 @@ description of <code>scroll_mode()</code> for more information.</p>
     
     
     
+      <span><a href="api/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
   </span>
 </div>
     <script src="js/jquery-3.6.0.min.js"></script>
@@ -919,5 +237,5 @@ description of <code>scroll_mode()</code> for more information.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-28 23:13:16.645279+00:00
+Build Date UTC : 2025-03-29 15:49:50.950563+00:00
 -->
