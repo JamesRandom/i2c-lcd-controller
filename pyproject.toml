@@ -3,7 +3,6 @@
 name = "i2c-lcd"
 description = "A Python interface to an LCD display module connected via an I2C port expander"
 version = "0.1.0"
-readme = "README.md"
 license = "0BSD"
 dependencies = [
     "smbus2==0.5.0"
@@ -20,10 +19,6 @@ classifiers = [
     "Topic :: System :: Hardware :: Hardware Drivers"
 ]
 
-[tool.setuptools]
-
-packages = ["i2c_lcd"]
-
 [project.urls]
 
 documentation = "https://jamesrandom.github.io/i2c-lcd-controller/"
@@ -35,3 +30,11 @@ requires = [
     "setuptools"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+
+packages = ["i2c_lcd"]
+
+[project.optional-dependencies]
+
+dev = ["black", "isort", "build", "twine"]
