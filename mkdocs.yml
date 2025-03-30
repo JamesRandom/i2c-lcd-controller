@@ -10,3 +10,4 @@ nav:
   - Overview: index.md
   - LCD API: api.md
   - Source code: https://github.com/JamesRandom/i2c-lcd-controller
+  - License: license.md

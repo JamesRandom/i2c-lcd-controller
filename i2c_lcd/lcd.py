@@ -386,7 +386,7 @@ class LCD:
 
     def home(self):
         """
-        Return the cursor to the home position (0, 0) and under any shifts of
+        Return the cursor to the home position (0, 0) and undo any shifts of
         the display.
         """
 
@@ -453,7 +453,8 @@ class LCD:
 
     def print_at(self, line: int, position: int, s: str):
         """
-        Print text at a specified location. Just a shortcut for move and print.
+        Print text at a specified location. Just a shortcut for [`move_to()`][i2c_lcd.LCD.move_to] and
+        [`print()`][i2c_lcd.LCD.print].
 
         Args:
             line: The line number to write to (lines are numbered from 0).

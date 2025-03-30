@@ -28,21 +28,26 @@ $ python3 -m pip install https://github.com/JamesRandom/i2c-lcd-controller
 
 * Python version 3.9 or later (it may work with earlier versions but it isn't tested)
 
-* Requires [smbus2](https://pypi.org/project/smbus2/):
+* Requires a compatible SMBus interface, such as [smbus2](https://pypi.org/project/smbus2/)
 
 ### Enable I2C interface on Raspberry Pi
 
 On the Raspberry Pi, you will need to enable the I2C interface. This can be done in any of the following ways:
 
-- Using the configuration tool (select "Interface Options" then "I2C"):
+*   Using the configuration tool (select "Interface Options" then "I2C"):
 
-        sudo raspi-config
+        ```bash
+        $ sudo raspi-config
+        ```
 
-- From the command line:
+*   From the command line:
 
-        sudo raspi-config nonint do_i2c 0
+        ```bash
+        $ sudo raspi-config nonint do_i2c 0
+        ```
 
-- By changing the following line in `/boot/config.txt` and then rebooting:
+*   By changing the following line in `/boot/config.txt` and then rebooting:
 
+        ```bash
         dtparam=i2c_arm=on
-
+        ```
