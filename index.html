@@ -62,6 +62,10 @@
                 <li class="toctree-l1"><a class="" href="https://github.com/JamesRandom/i2c-lcd-controller">Source code</a>
                 </li>
               </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="license/">License</a>
+                </li>
+              </ul>
       </div>
     </div>
     </nav>
@@ -100,8 +104,12 @@ and fully functional, then take a look at
 would have used it instead of writing my own code, if I had seen it sooner.</p>
 <h2 id="features">Features</h2>
 <ul>
-<li>Simple API</li>
-<li>Support for:</li>
+<li>
+<p>Simple API</p>
+</li>
+<li>
+<p>Support for:</p>
+<ul>
 <li>printing text at any location</li>
 <li>left-to-right and right-to-left printing</li>
 <li>turn display and backlight on/off</li>
@@ -110,20 +118,22 @@ would have used it instead of writing my own code, if I had seen it sooner.</p>
 <li>clearing display</li>
 <li>clearing a single line</li>
 </ul>
+</li>
+</ul>
 <p><strong>To do list:</strong></p>
 <ul>
 <li>Use a single cursor mode setting to switch between underline, blink and no
-  cursor</li>
+    cursor</li>
 <li>Support newline characters in text (and maybe an explicit newline method)</li>
 <li>Cache the display contents in a framebuffer so only changes to the content
-  need to be written to the display</li>
+    need to be written to the display</li>
 <li>With that, could make the display a window onto a larger virtual screen to
-  enable more efficient vertical and horizontal scrolling of text (including
-  scrolling single lines)</li>
+    enable more efficient vertical and horizontal scrolling of text (including
+    scrolling single lines)</li>
 <li>Add support for custom characters</li>
 </ul>
 <h2 id="installation">Installation</h2>
-<p>You can install from the GitHub repository. for example:</p>
+<p>You can install from the GitHub repository, for example:</p>
 <pre><code class="language-bash">$ pip install git+https://github.com/JamesRandom/i2c-lcd-controller.git
 </code></pre>
 <p>Alternatively, you can clone the repository and install from source:</p>
@@ -241,5 +251,5 @@ order to latch the data into the controller.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-29 15:56:42.092511+00:00
+Build Date UTC : 2025-03-30 14:45:42.379288+00:00
 -->
