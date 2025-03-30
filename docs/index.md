@@ -20,30 +20,32 @@ would have used it instead of writing my own code, if I had seen it sooner.
 ## Features
 
 * Simple API
+
 * Support for:
-  * printing text at any location
-  * left-to-right and right-to-left printing
-  * turn display and backlight on/off
-  * select cursor type
-  * scroll display left/right
-  * clearing display
-  * clearing a single line
+
+    * printing text at any location
+    * left-to-right and right-to-left printing
+    * turn display and backlight on/off
+    * select cursor type
+    * scroll display left/right
+    * clearing display
+    * clearing a single line
 
 **To do list:**
 
-* Use a single cursor mode setting to switch between underline, blink and no
-  cursor
-* Support newline characters in text (and maybe an explicit newline method)
-* Cache the display contents in a framebuffer so only changes to the content
-  need to be written to the display
-* With that, could make the display a window onto a larger virtual screen to
-  enable more efficient vertical and horizontal scrolling of text (including
-  scrolling single lines)
-* Add support for custom characters
+*   Use a single cursor mode setting to switch between underline, blink and no
+    cursor
+*   Support newline characters in text (and maybe an explicit newline method)
+*   Cache the display contents in a framebuffer so only changes to the content
+    need to be written to the display
+*   With that, could make the display a window onto a larger virtual screen to
+    enable more efficient vertical and horizontal scrolling of text (including
+    scrolling single lines)
+*   Add support for custom characters
 
 ## Installation
 
-You can install from the GitHub repository. for example:
+You can install from the GitHub repository, for example:
 
 ```bash
 $ pip install git+https://github.com/JamesRandom/i2c-lcd-controller.git
@@ -107,4 +109,3 @@ To write a byte to the LCD controller, two four bit values have to be written
 
 * [HD44780U Dot Matrix Liquid Crystal Display Controller/Driver](https://cdn-shop.adafruit.com/datasheets/HD44780.pdf)
 * [PCA8574/74A Remote 8-bit I/O expander for I2C-bus](https://www.nxp.com/docs/en/data-sheet/PCA8574_PCA8574A.pdf)
-
