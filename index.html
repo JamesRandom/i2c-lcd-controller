@@ -89,19 +89,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="lcd-display-controller">LCD Display Controller</h1>
-<p>This module allows a Python program to control a liquid crystal display (LCD)
-module, that uses the Hitachi HD44780 (or a compatible) chipset.</p>
-<p>This code assumes that the LCD is connected via an I<sup>2</sup>C interface, for example
-the the <a href="https://www.dfrobot.com/product-590.html">DFRobot 20x4 display module</a>
-and similar products.</p>
+                <h1 id="liquid-crystal-display-controller">Liquid crystal display controller</h1>
+<p>This module allows a Python program to access an alphanumeric liquid crystal display (LCD)
+module, that uses the Hitachi HD44780, or compatible, LCD controller.</p>
+<p>The code is only suitable for an LCD that is connected via an I<sup>2</sup>C interface,
+for example the <a href="https://www.dfrobot.com/product-590.html">DFRobot 20×4 display
+module</a> and similar products. It
+cannot be used in a system where the LCD controller is connected directly to the
+microcontroller's GPIO pins.</p>
 <p>The code was written to be used with a Raspberry Pi. It should be compatible
-with other microcontrollers such as Arduino, but this has not been tested.</p>
+with other microcontrollers such as Arduino, but this has not been tested</p>
 <p>It turns out there are lots of Python implementations of LCD controllers, of
 varying degrees of completeness. If you are looking for something more flexible
 and fully functional, then take a look at
 <a href="https://rplcd.readthedocs.io/">RPLCD</a>. I haven't tried this but I probably
-would have used it instead of writing my own code, if I had seen it sooner.</p>
+would have used it, instead of writing my own code, if I had seen it sooner.</p>
 <h2 id="features">Features</h2>
 <ul>
 <li>
@@ -111,10 +113,8 @@ would have used it instead of writing my own code, if I had seen it sooner.</p>
 <p>Support for:</p>
 <ul>
 <li>printing text at any location</li>
-<li>left-to-right and right-to-left printing</li>
 <li>turn display and backlight on/off</li>
 <li>select cursor type</li>
-<li>scroll display left/right</li>
 <li>clearing display</li>
 <li>clearing a single line</li>
 </ul>
@@ -122,8 +122,6 @@ would have used it instead of writing my own code, if I had seen it sooner.</p>
 </ul>
 <p><strong>To do list:</strong></p>
 <ul>
-<li>Use a single cursor mode setting to switch between underline, blink and no
-    cursor</li>
 <li>Support newline characters in text (and maybe an explicit newline method)</li>
 <li>Cache the display contents in a framebuffer so only changes to the content
     need to be written to the display</li>
@@ -141,27 +139,41 @@ would have used it instead of writing my own code, if I had seen it sooner.</p>
 $ pip install ./i2c-lcd-controller
 </code></pre>
 <h2 id="example">Example</h2>
-<pre><code>from i2c_lcd import LCD
+<pre><code>from time import sleep
+
+from i2c_lcd import LCD
 
 lcd = LCD()
 
 lcd.clear_display()
+
+# Print some text
 lcd.move_to(0, 5)
 lcd.print(&quot;Hello world&quot;)
+sleep(1)
 
-# Right to left text
-lcd.left_to_right(False)
-lcd.print_at(2, 15, &quot;Hello world&quot;)
-lcd.left_to_right(True)
+# Show the various cursor types
+lcd.set_cursor(LCD.Cursor.BLINK)
+sleep(1)
+lcd.set_cursor(LCD.Cursor.UNDERSCORE)
+sleep(1)
+lcd.set_cursor(LCD.Cursor.NONE)
+sleep(1)
 
-# Turn off display
-sleep(5)
+# Display more text and delete the original
+lcd.move_to(1, 6)
+lcd.print(&quot;Hello world&quot;)
+lcd.clear_line(0)
+
+# Turn off display and backlight
+sleep(3)
 lcd.display(False)
+sleep(2)
 lcd.backlight(False)
 </code></pre>
 <h2 id="hardware">Hardware</h2>
 <p>The output pins on the PCA8574 I<sup>2</sup>C expander port are connected to the
-control and data bits on the HD44780U LCD display controller as follows:</p>
+control and data bits on the HD44780U LCD controller as follows:</p>
 <table>
 <thead>
 <tr>
@@ -194,11 +206,11 @@ control and data bits on the HD44780U LCD display controller as follows:</p>
 </table>
 <p>These pins are controlled by writing a byte with the signal values to the I<sup>2</sup>C
 address of the port expander.</p>
-<p>In order to write a value to the LCD controller, two writes to the I<sup>2</sup>C interface
+<p>To write a value to the LCD controller, two writes to the I<sup>2</sup>C interface
 are required: once with the Enable bit high and then with the Enable bit low in
 order to latch the data into the controller.</p>
 <p>To write a byte to the LCD controller, two four bit values have to be written
-(high-order bits first). So this requires a total of four I<sup>2</sup>C writes.</p>
+(high-order bits first). Therefore, this requires a total of four I<sup>2</sup>C writes.</p>
 <h3 id="datasheets">Datasheets</h3>
 <ul>
 <li><a href="https://cdn-shop.adafruit.com/datasheets/HD44780.pdf">HD44780U Dot Matrix Liquid Crystal Display Controller/Driver</a></li>
@@ -251,5 +263,5 @@ order to latch the data into the controller.</p>
 
 <!--
 MkDocs version : 1.6.1
-Build Date UTC : 2025-03-30 14:45:42.379288+00:00
+Build Date UTC : 2025-03-31 14:44:31.409382+00:00
 -->
