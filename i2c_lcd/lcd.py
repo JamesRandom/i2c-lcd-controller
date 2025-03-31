@@ -60,12 +60,21 @@ class LCD:
     functions to display text, turn the display on and off, etc.
 
     Args:
-        size: A tuple of character width and number of lines in the display.
+        width: The character width of the display.
+        height: The number of lines in the display.
         i2c_address: The address of the display on the I2C bus.
         i2c_bus: The I2C bus that the device is connected to.
     """
 
     class Cursor(Enum):
+        """
+        The style of cursor displayed. One of:
+
+        * `LCD.Cursor.NONE`: No visible cursor
+        * `LCD.Cursor.BLINK`: A blinking character cursor
+        * `LCD.Cursor.UNDERSCORE`: An underscore cursor
+        """
+
         NONE = enum.auto()
         BLINK = enum.auto()
         UNDERSCORE = enum.auto()
@@ -164,7 +173,7 @@ class LCD:
         # Default display settings
         self._backlight = True
         self._display_on = True
-        self._cursor_on = False
+        self._cursor_on = True
         self._blink_on = False
 
         # The LCD controller needs at least 15ms after Vcc rises to 4.5V and
@@ -260,12 +269,13 @@ class LCD:
         self._display_on = on
         self._set_display_mode()
 
-    def cursor(self, style: LCD.Cursor):
+    def set_cursor(self, style: LCD.Cursor):
         """
-        Turn the underline and blinking character cursors off.
+        Select the type of cursor to be displayed. Select underline,
+        blinking, or no cursor.
 
         Args:
-            Style: Specifies the type of cursor to use.
+            style: Specifies the type of cursor to use.
         """
 
         # Set the appropriate flags for the type of cursor
@@ -385,7 +395,7 @@ class LCD:
         # Set the cursor to the start of the line
         self.move_to(line, 0)
         # Fill the line
-        for _ in range(self._display_height):
+        for _ in range(self._display_width):
             self._write_data(ord(character) & 0xFF)
         # Set the cursor back to the start of the line
         self.move_to(line, 0)
