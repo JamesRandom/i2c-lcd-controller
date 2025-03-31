@@ -45,7 +45,8 @@ Raspberry Pi.
 
 from __future__ import annotations
 
-from enum import IntEnum
+import enum
+from enum import Enum, IntEnum
 from logging import debug, warning
 from time import sleep
 
@@ -63,6 +64,11 @@ class LCD:
         i2c_address: The address of the display on the I2C bus.
         i2c_bus: The I2C bus that the device is connected to.
     """
+
+    class Cursor(Enum):
+        NONE = enum.auto()
+        BLINK = enum.auto()
+        UNDERSCORE = enum.auto()
 
     class _Commands(IntEnum):
         """
@@ -139,9 +145,6 @@ class LCD:
     _BACKLIGHT_ON         = 0b1000
     _BACKLIGHT_OFF        = 0b0000
     # fmt: on
-
-    _X = 0
-    _Y = 1
 
     def __init__(
         self,
@@ -220,7 +223,7 @@ class LCD:
         else:
             command |= N_2_LINES
         # Set 4 bit mode
-        self._lcd_write(0, 0b001_0010)
+        self._lcd_write_byte(0, 0b001_0010)
         self._write_command(command)
 
     def _set_display_mode(self):
@@ -257,26 +260,27 @@ class LCD:
         self._display_on = on
         self._set_display_mode()
 
-    def cursor(self, on: bool):
+    def cursor(self, style: LCD.Cursor):
         """
-        Turn the underline cursor on or off.
+        Turn the underline and blinking character cursors off.
 
         Args:
-            on: If set to True, the cursor will be on.
+            Style: Specifies the type of cursor to use.
         """
 
-        self._cursor_on = on
-        self._set_display_mode()
+        # Set the appropriate flags for the type of cursor
+        if style == LCD.Cursor.NONE:
+            # Turn the underline cursor on or off.
+            self._cursor_on = False
+            self._blink_on = False
+        elif style == LCD.Cursor.BLINK:
+            self._cursor_on = False
+            self._blink_on = True
+        elif style == LCD.Cursor.UNDERSCORE:
+            self._cursor_on = True
+            self._blink_on = False
 
-    def blink(self, on: bool):
-        """
-        Turn the blinking character cursor on or off.
-
-        Args:
-            on: If set to True, blinking will be on.
-        """
-
-        self._blink_on = on
+        # Apply those settings
         self._set_display_mode()
 
     def backlight(self, on: bool):
@@ -400,7 +404,7 @@ class LCD:
         """
 
         debug(f"Command: {command_bits:09_b}")
-        self._lcd_write(self._INSTRUCTION_REGISTER, command_bits)
+        self._lcd_write_byte(self._INSTRUCTION_REGISTER, command_bits)
 
     def _write_data(self, data: int):
         """
@@ -411,13 +415,13 @@ class LCD:
         """
 
         debug(f"Data: {data:09_b}")
-        self._lcd_write(self._DATA_REGISTER, data)
+        self._lcd_write_byte(self._DATA_REGISTER, data)
 
     #
     # Low-level functions to access the LCD controller via I2C
     #
 
-    def _lcd_write(self, register: int, data: int):
+    def _lcd_write_byte(self, register: int, data: int):
         """
         Write a data byte to a register in the LCD controller.
 
