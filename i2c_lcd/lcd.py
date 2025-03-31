@@ -458,72 +458,9 @@ class LCD:
         # De-assert the Enable bit to complete the write
         self._i2c_write(data)
 
-    def lcd_read(self, register: int) -> int:
-        """
-        Read a data byte from a register in the LCD controller.
-
-        NOTE:
-            Not currently working as expected. Haven't spent any time
-            investigating, as I don't have a use for it at the moment.
-
-        Args:
-            register: Selects either the instruction or data register.
-
-        Returns:
-            A byte of data from the controller.
-        """
-
-        # Read the upper 4 bits
-        hi = self._lcd_read4(register)
-        # Then the lower 4 bits
-        lo = self._lcd_read4(register)
-        # Combine them (both nibbles are in the upper 4 bits) into a byte
-        data = hi | (lo >> 4)
-
-        return data
-
-    def _lcd_read4(self, register: int) -> int:
-        """
-        Read 4 bits from a register in the LCD controller.
-
-        Args:
-            register: Selects either the instruction or data register.
-
-        Returns:
-            A byte with the controller data in the upper 4 bits.
-        """
-
-        # Combine the register and read bit
-        control_bits = register | self._READ
-        # Set the backlight control bit appropriately
-        if self._backlight:
-            control_bits |= self._BACKLIGHT_ON
-        else:
-            control_bits |= self._BACKLIGHT_OFF
-        # Assert enable bit
-        self._i2c_write(control_bits | self._ENABLE)
-        # De-assert enable bit
-        self._i2c_write(control_bits)
-        # Read the data
-        data = self._i2c_read() & 0xF0
-
-        return data
-
     #
     # Functions to access the I2C interface
     #
-
-    def _i2c_read(self) -> int:
-        """
-        Read one byte from the I2C address.
-        """
-
-        with SMBus(bus=self._i2c_bus) as smbus:
-            data = smbus.read_byte(
-                i2c_addr=self._i2c_address,
-            )
-
-        return data
 
     def _i2c_write(self, data: int):
         """
