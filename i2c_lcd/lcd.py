@@ -263,40 +263,6 @@ class LCD:
     # User level functions
     #
 
-    def scroll_left(self, count: int):
-        """
-        Scroll the display right by the specified number of places. See the
-        description of `scroll_mode()` for more information.
-
-        Args:
-            count: Number of character positions to scroll. The text wraps round
-                   at the ends of lines.
-        """
-        command = (
-            LCD._Commands.SET_SHIFT_MODE
-            | LCD._Commands.DISPLAY_MOVE
-            | LCD._Commands.MOVE_LEFT
-        )
-        for _ in range(count):
-            self._write_command(command)
-
-    def scroll_right(self, count: int):
-        """
-        Scroll the display right by the specified number of places. See the
-        description of `scroll_mode()` for more information.
-
-        Args:
-            count: Number of character positions to scroll. The text wrap round
-                   at the ends of lines.
-        """
-
-        command = (
-            LCD._Commands.SET_SHIFT_MODE
-            | LCD._Commands.DISPLAY_MOVE
-            | LCD._Commands.MOVE_RIGHT
-        )
-        for _ in range(count):
-            self._write_command(command)
 
     def left_to_right(self, on: bool):
         """
