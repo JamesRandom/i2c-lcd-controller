@@ -145,14 +145,16 @@ class LCD:
 
     def __init__(
         self,
-        size: tuple[int, int] = (20, 4),
+        width: int = 20,
+        height: int = 4,
         i2c_address: int = 0x20,
         i2c_bus: int | str = 1,
     ):
         # Initialise LCD controller to default state.
 
         # Device parameters
-        self._display_size = size
+        self._display_width = width
+        self._display_height = height
         self._i2c_bus = i2c_bus
         self._i2c_address = i2c_address
 
@@ -161,9 +163,6 @@ class LCD:
         self._display_on = True
         self._cursor_on = False
         self._blink_on = False
-
-        # Current cursor position
-        self._cursor = [0, 0]
 
         # The LCD controller needs at least 15ms after Vcc rises to 4.5V and
         # 40ms after Vcc rises above 2.7V. So wait even though this probably
@@ -216,7 +215,7 @@ class LCD:
         # contiguous (a single "logical" line), and the second and and fourth
         # lines are contiguous. This causes some suprising results when moving
         # past the ends of lines.
-        if self._display_size[self._Y] == 1:
+        if self._display_height == 1:
             command |= N_1_LINE
         else:
             command |= N_2_LINES
@@ -244,7 +243,6 @@ class LCD:
     #
     # User level functions
     #
-
 
     def display(self, on: bool):
         """
@@ -327,20 +325,18 @@ class LCD:
         line_addresses = [0x00, 0x40, 0x14, 0x54]
 
         # Check for valid values
-        if not 0 <= line < self._display_size[self._Y]:
+        if not 0 <= line < self._display_height:
             raise ValueError(
-                f"Line number ({line}) out of range 0 to {self._display_size[self._Y]-1}"
+                f"Line number ({line}) out of range 0 to {self._display_height-1}"
             )
-        if not 0 <= position < self._display_size[self._X]:
+        if not 0 <= position < self._display_width:
             raise ValueError(
-                f"Position ({position}) out of range 0 to {self._display_size[self._X]-1}"
+                f"Position ({position}) out of range 0 to {self._display_width-1}"
             )
         # Calculate the memory address for this position.
         address = line_addresses[line] + position
         # Set the current display memory address
         self._write_command(LCD._Commands.SET_DDRAM_ADDRESS | address)
-        # Update our internal record of the cursor position
-        self._cursor = [position, line]
 
     def print(self, s: str):
         """
@@ -350,19 +346,13 @@ class LCD:
             s: The string to write.
         """
 
+        # Note that it is valid to write past the line; it will wrap round
+        # to the next line. This may be undesirable in the case of a
+        # four-line display where the continuation of a line is not the next
+        # line, but the one after.
         for c in s:
-            # If position is off either end of the line, then stop. Note that it
-            # is valid to write past the line; it will wrap round to the next
-            # line. But, in general, that may not be what we want. Particularly
-            # in the case of a four-line display where the continuation of a
-            # line is not the next line, but the one after.
-            if not 0 <= self._cursor[self._X] < self._display_size[self._X]:
-                break
             # Write the character to the data memory
             self._write_data(ord(c) & 0xFF)
-            # Adjust our internal record of the position depending on the
-            # insertion direction
-            self._cursor[self._X] += 1
 
     def print_at(self, line: int, position: int, s: str):
         """
@@ -378,24 +368,23 @@ class LCD:
         self.move_to(line, position)
         self.print(s)
 
-    def clear_line(self, character: str = " "):
+    def clear_line(self, line: int, character: str = " "):
         """
-        Erase the contents of the current line. Does not change the cursor position.
+        Erase the contents of a line.
 
         Args:
+            line: The line number to clear. Line numbers start from zero.
             character: The character to use to overwrite the current content.
                        Defaults to a space.
         """
 
-        # Record the current position
-        pos = self._cursor[self._X]
         # Set the cursor to the start of the line
-        self.move_to(self._cursor[self._Y], 0)
+        self.move_to(line, 0)
         # Fill the line
-        for _ in range(self._display_size[self._Y]):
+        for _ in range(self._display_height):
             self._write_data(ord(character) & 0xFF)
-        # Restore the original cursor position
-        self.move_to(self._cursor[self._Y], pos)
+        # Set the cursor back to the start of the line
+        self.move_to(line, 0)
 
     #
     # Functions to access the I2C interface
