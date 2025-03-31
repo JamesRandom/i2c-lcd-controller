@@ -8,6 +8,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Vale linter files
+styles/
+
 # Distribution / packaging
 .Python
 build/

@@ -1,16 +1,21 @@
 # I2C LCD Controller
 
-A Python interface to an LCD display module connected via an I2C port expander, such as the
-the DFRobot 20x4 display module: https://www.dfrobot.com/product-590.html.
+A Python interface to an alphanumeric liquid crystal display (LCD) module
+connected via an I2C port expander.
 
-Currently, the code has only been tested with that display module connected to a
-Raspberry Pi.
+Currently, the code has only been tested with the
+[DFRobot 20x4 display module](https://www.dfrobot.com/product-590.html)
+connected to a Raspberry Pi.
 
 I bought the display for a possible project using the Raspberry Pi, but then
 found that the only code they supply is in C for the Arduino (which depend on
 other hardware interface libraries). Rather than try and rewrite their library
 in Python, I decided it was better to look at the datasheets and write a simple
 interface class.
+
+(I have since found several other Python interfaces for this type of display,
+many of which have more functionality than this one. But this is tuned for my
+needs, so I will stick with it now. It has the advantage of simplicity.)
 
 ## Documentation
 
