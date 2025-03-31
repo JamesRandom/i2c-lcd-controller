@@ -161,8 +161,6 @@ class LCD:
         self._display_on = True
         self._cursor_on = False
         self._blink_on = False
-        self._scroll_mode = False
-        self._left_to_right = True
 
         # Current cursor position
         self._cursor = [0, 0]
@@ -175,7 +173,6 @@ class LCD:
         # Configure the interface
         self._function_set()
         self._set_display_mode()
-        self._set_entry_mode()
 
     def _function_set(self):
         """
@@ -244,57 +241,10 @@ class LCD:
         # Write the command
         self._write_command(display_mode)
 
-    def _set_entry_mode(self):
-        """
-        Set the entry mode as defined by the current state.
-        """
-
-        # The comand bit for setting the mode
-        entry_mode = LCD._Commands.SET_ENTRY_MODE
-        # Combine the appropriate bits
-        if self._scroll_mode:
-            entry_mode |= LCD._Commands.ENTRY_SCROLL_ON
-        if self._left_to_right:
-            entry_mode |= LCD._Commands.ENTRY_SCROLL_LEFT
-        # Write the command
-        self._write_command(entry_mode)
-
     #
     # User level functions
     #
 
-
-    def left_to_right(self, on: bool):
-        """
-        Set text insertion direction.
-
-        Args:
-            on: If True, text will be written left-to-right. If False, then text
-                will be written right-to-left.
-        """
-
-        self._left_to_right = on
-        self._set_entry_mode()
-
-    def scroll_mode(self, on: bool):
-        """
-        Turn on scrolling mode for text entry. When this is one, then new
-        characters are entered at the cursor position and the existing text is
-        shifted left (or right, depending on the setting of left-to-right text mode).
-
-        Note that the entire display is shifted, not just the current line. Text
-        shifted off either end of the line wraps around to the previous/next
-        line. For a four-line display, this results in some odd effects because,
-        for example, the end of the first line wraps to the start of the third
-        line.
-
-        Args:
-            on: If True, turn on scroll mode. Otherwise use cursor
-                increment/decrement mode.
-        """
-
-        self._scroll_mode = on
-        self._set_entry_mode()
 
     def display(self, on: bool):
         """
@@ -412,15 +362,12 @@ class LCD:
             self._write_data(ord(c) & 0xFF)
             # Adjust our internal record of the position depending on the
             # insertion direction
-            if self._left_to_right:
-                self._cursor[self._X] += 1
-            else:
-                self._cursor[self._X] -= 1
+            self._cursor[self._X] += 1
 
     def print_at(self, line: int, position: int, s: str):
         """
-        Print text at a specified location. Just a shortcut for [`move_to()`][i2c_lcd.LCD.move_to] and
-        [`print()`][i2c_lcd.LCD.print].
+        Print text at a specified location. Just a shortcut for
+        [`move_to()`][i2c_lcd.LCD.move_to] and [`print()`][i2c_lcd.LCD.print].
 
         Args:
             line: The line number to write to (lines are numbered from 0).
@@ -602,4 +549,3 @@ class LCD:
                 i2c_addr=self._i2c_address,
                 value=data,
             )
-
