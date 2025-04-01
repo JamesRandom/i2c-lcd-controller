@@ -28,6 +28,6 @@ lcd.clear_line(0)
 
 # Turn off display and backlight
 sleep(3)
-lcd.display(False)
+lcd.display_on(False)
 sleep(2)
-lcd.backlight(False)
+lcd.backlight_on(False)

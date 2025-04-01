@@ -49,22 +49,41 @@ import enum
 from enum import Enum, IntEnum
 from logging import debug, warning
 from time import sleep
-
-from smbus2 import SMBus
+from typing import Iterable
 
 
 # pylint: disable=too-many-instance-attributes
-class LCD:
+class LCD(list):
     """
     The LCD class interfaces to the LCD driver via I2C and provides a set of high-level user
     functions to display text, turn the display on and off, etc.
 
     Args:
+        iterable: A list of strings to initialise the display with.
         width: The character width of the display.
         height: The number of lines in the display.
         i2c_address: The address of the display on the I2C bus.
         i2c_bus: The I2C bus that the device is connected to.
     """
+
+    class TruncateMode(Enum):
+        """
+        How lines longer than the LCD screen are to be handled. One of:
+
+        * `LCD.TruncateMode.TRUNCATE`: Truncate the end of the line to fit the
+          screen.
+        * `LCD.TruncateMode.ELLIPSIS_END`: Cut the end of the string and append
+          the ellipses.
+        * `LCD.TruncateMode.ELLIPSIS_MIDDLE`: Show the start and end of the
+          string with ellipses in the middle.
+        * `LCD.TruncateMode.SCROLL`: Scroll long lines so the whole line is seen
+          over time.
+        """
+
+        TRUNCATE = enum.auto()
+        ELLIPSIS_END = enum.auto()
+        ELLIPSIS_MIDDLE = enum.auto()
+        SCROLL = enum.auto()
 
     class Cursor(Enum):
         """
@@ -157,12 +176,15 @@ class LCD:
 
     def __init__(
         self,
+        iterable: Iterable,
         width: int = 20,
         height: int = 4,
         i2c_address: int = 0x20,
         i2c_bus: int | str = 1,
     ):
         # Initialise LCD controller to default state.
+
+        super().__init__(iterable)
 
         # Device parameters
         self._display_width = width
@@ -173,8 +195,9 @@ class LCD:
         # Default display settings
         self._backlight = True
         self._display_on = True
-        self._cursor_on = True
+        self._cursor_on = False
         self._blink_on = False
+        self._truncate_mode = self.TruncateMode.TRUNCATE
 
         # The LCD controller needs at least 15ms after Vcc rises to 4.5V and
         # 40ms after Vcc rises above 2.7V. So wait even though this probably
@@ -252,11 +275,44 @@ class LCD:
         # Write the command
         self._write_command(display_mode)
 
+    def _truncate(self, text: str, width: int):
+        """
+        Truncate a line of text to fit in the display. The truncation is done
+        according to the current mode.
+        """
+
+        # The string or character to use to mark the truncation
+        ellipsis = ".."
+
+        if len(text) <= width:
+            # Short strings get padded with spaces to fit the display
+            text += " " * (width - len(text))
+        elif self._truncate_mode == self.TruncateMode.TRUNCATE:
+            # Truncate the text to the display width
+            text = text[:width]
+        elif self._truncate_mode == self.TruncateMode.ELLIPSIS_END:
+            # Cut the end of the string and append the ellipses
+            text = text[: width - len(ellipsis)] + "..."
+        elif self._truncate_mode == self.TruncateMode.ELLIPSIS_MIDDLE:
+            # Show the start and end of the string with ellipses in the middle
+            middle = width / 2
+            # Round up the length of the first chunk
+            first = text[: round(middle + 0.1)]
+            # Round down the length of the last chunk
+            last = text[-(round(middle - 0.1) - len(ellipsis)) :]
+            text = first + ellipsis + last
+        elif self._truncate_mode == self.TruncateMode.SCROLL:
+            raise NotImplementedError("Scroll mode not implemented")
+        else:
+            raise ValueError("Unknown truncation mode")
+
+        return text
+
     #
     # User level functions
     #
 
-    def display(self, on: bool):
+    def display_on(self, on: bool):
         """
         Turn the display on or off.
 
@@ -293,7 +349,7 @@ class LCD:
         # Apply those settings
         self._set_display_mode()
 
-    def backlight(self, on: bool):
+    def backlight_on(self, on: bool):
         """
         Turn the backlight on or off.
 
@@ -306,7 +362,7 @@ class LCD:
 
     def clear_display(self):
         """
-        Clear the display.
+        Clear the display. The cursor is set to the home position (0, 0).
         """
 
         self._write_command(self._Commands.CLEAR_DISPLAY)
@@ -400,6 +456,59 @@ class LCD:
         # Set the cursor back to the start of the line
         self.move_to(line, 0)
 
+    def update(self, line: int):
+        """
+        Update the LCD to display the contents of the textbuffer, starting at
+        `line`.
+
+        Args:
+            line: The line number in the text buffer to display.
+        """
+
+        text_width = self._display_width - 1
+        margin = 1
+
+        if line > 0:
+            up = "^"
+        else:
+            up = " "
+        if line + self._display_height < len(self):
+            down = "v"
+        else:
+            down = " "
+
+        if (line + self._display_height) < 0 or line >= len(self):
+            # Skip updating if nothing will be displayed
+            self.clear_display()
+            print(f"|{' '*margin}{'.' * text_width}|")
+        else:
+            print(f"|{'-' * self._display_width}|")
+
+            for i in range(self._display_height):
+                index = line + i
+                if 0 <= index < len(self):
+                    t = self._truncate(self[index], text_width)
+                    self.print_at(i, margin, t)
+                    print(f"|{' '*margin}{t}|")
+                else:
+                    self.clear_line(i)
+                    print(f"|{' ' * self._display_width}|")
+            print(f"|{'-' * self._display_width}|")
+
+        self.print_at(0, 0, up)
+        self.print_at(self._display_height - 1, 0, down)
+
+    def set_truncate_mode(self, mode: LCD.TruncateMode):
+        """
+        Set the truncate mode to be used when displaying the text buffer on the
+        LCD.
+        """
+
+        if self._truncate_mode == self.TruncateMode.SCROLL:
+            raise NotImplementedError("Scroll mode not implemented")
+
+        self._truncate_mode = mode
+
     #
     # Functions to access the I2C interface
     #
@@ -484,8 +593,43 @@ class LCD:
             data: The 8-bit value to write.
         """
 
-        with SMBus(bus=self._i2c_bus) as smbus:
-            smbus.write_byte(
-                i2c_addr=self._i2c_address,
-                value=data,
-            )
+        try:
+            from smbus2 import SMBus
+        except:
+            pass
+        else:
+            with SMBus(bus=self._i2c_bus) as smbus:
+                smbus.write_byte(
+                    i2c_addr=self._i2c_address,
+                    value=data,
+                )
+
+
+if __name__ == "__main__":
+
+    text = [
+        "Phasellus id purus a nisl eleifend suscipit feugiat semper ante.",
+        "Praesent gravida quam non mollis suscipit.",
+        "Blank line:",
+        "",
+        "1234567890123456789",
+        "12345678901234567890",
+        "123456789012345678901",
+        "Nullam a tellus rutrum, congue lectus et, feugiat lacus.",
+        # "Nam id mauris egestas neque imperdiet gravida.",
+        # "Etiam a nunc cursus odio placerat ultricies nec et ligula.",
+        # "Ut a dui ut justo commodo pellentesque eget sed justo.",
+        # "Praesent pellentesque neque euismod massa rutrum iaculis.",
+        # "Fusce at tortor a lacus malesuada placerat.",
+    ]
+
+    lcd = LCD(text)
+
+    # text.insert(5, "Inserted: Quisque elementum magna a dignissim tristique.")
+
+    lcd.set_truncate_mode(LCD.TruncateMode.ELLIPSIS_MIDDLE)
+    for i in range(-4, len(text) + 5):
+        lcd.update(i)
+        sleep(0.8)
+    lcd.display_on(False)
+    lcd.backlight_on(False)

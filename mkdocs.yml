@@ -4,7 +4,14 @@ theme:
   name: readthedocs
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          inventories:
+          - https://docs.python.org/3/objects.inv
+          # Include this option to document internal methods
+          #options:
+          #  filters: []
 
 nav:
   - Overview: index.md
