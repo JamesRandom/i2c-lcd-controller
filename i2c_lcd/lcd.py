@@ -282,7 +282,7 @@ class LCD(list):
         """
 
         # The string or character to use to mark the truncation
-        ellipsis = ".."
+        ellipsis = chr(2)
 
         if len(text) <= width:
             # Short strings get padded with spaces to fit the display
@@ -307,6 +307,27 @@ class LCD(list):
             raise ValueError("Unknown truncation mode")
 
         return text
+
+    def define_custom_character(self, code: int, bitmap: list[int]):
+        """
+        Store the bitmap for a custom character in the character generator RAM.
+        See page 13 and table (page 19) of the HD44780 datasheet.
+
+        Args:
+            code: The character code. Must be between 0 and 7 (eight characters
+                  can be defined).
+            bitmap: A list of integers defining the pixels in the character.
+        """
+
+        if not 0 <= code < 8:
+            raise ValueError("The code for a custom character must be between 0 and 7.")
+        if len(bitmap) != 8:
+            raise ValueError("The bitmap for a custom character must have eight rows.")
+
+        for row, bits in enumerate(bitmap):
+            address = code << 3 | row
+            self._write_command(LCD._Commands.SET_CGRAM_ADDRESS | address)
+            self._write_data(bits)
 
     #
     # User level functions
@@ -469,11 +490,11 @@ class LCD(list):
         margin = 1
 
         if line > 0:
-            up = "^"
+            up = chr(0)
         else:
             up = " "
         if line + self._display_height < len(self):
-            down = "v"
+            down = chr(1)
         else:
             down = " "
 
@@ -623,9 +644,45 @@ if __name__ == "__main__":
         # "Fusce at tortor a lacus malesuada placerat.",
     ]
 
+    chars = [
+        [
+            0b00100,
+            0b01110,
+            0b11111,
+            0b00000,
+            0b00100,
+            0b01110,
+            0b11111,
+            0b00000,
+        ],
+        [
+            0b00000,
+            0b11111,
+            0b01110,
+            0b00100,
+            0b00000,
+            0b11111,
+            0b01110,
+            0b00100,
+        ],
+        [
+            0b00000,
+            0b00000,
+            0b00000,
+            0b00000,
+            0b10101,
+            0b00000,
+            0b00000,
+            0b00000,
+        ],
+    ]
+
     lcd = LCD(text)
 
-    # text.insert(5, "Inserted: Quisque elementum magna a dignissim tristique.")
+    for n, bitmap in enumerate(chars):
+        lcd.define_custom_character(n, bitmap)
+
+    # t.insert(5, "Line 4a Quisque elementum magna a dignissim tristique.")
 
     lcd.set_truncate_mode(LCD.TruncateMode.ELLIPSIS_MIDDLE)
     for i in range(-4, len(text) + 5):
