@@ -46,6 +46,7 @@ Raspberry Pi.
 from __future__ import annotations
 
 import enum
+from collections import UserList
 from enum import Enum, IntEnum
 from logging import debug, warning
 from time import sleep
@@ -53,7 +54,7 @@ from typing import Iterable
 
 
 # pylint: disable=too-many-instance-attributes
-class LCD(list):
+class LCD(UserList):
     """
     The LCD class interfaces to the LCD driver via I2C and provides a set of high-level user
     functions to display text, turn the display on and off, etc.
@@ -176,7 +177,7 @@ class LCD(list):
 
     def __init__(
         self,
-        iterable: Iterable,
+        iterable: Iterable | None = None,
         width: int = 20,
         height: int = 4,
         i2c_address: int = 0x20,
@@ -198,6 +199,9 @@ class LCD(list):
         self._cursor_on = False
         self._blink_on = False
         self._truncate_mode = self.TruncateMode.TRUNCATE
+        self._scroll_bar = len(self.data) > self._display_height
+        # Allocate a frame buffer: an array of lines each containing width characters
+        self._framebuffer:list[str] = ["", "", "", ""]
 
         # The LCD controller needs at least 15ms after Vcc rises to 4.5V and
         # 40ms after Vcc rises above 2.7V. So wait even though this probably
@@ -207,6 +211,7 @@ class LCD(list):
         # Configure the interface
         self._function_set()
         self._set_display_mode()
+        self._clear_display()
 
     def _function_set(self):
         """
@@ -247,15 +252,16 @@ class LCD(list):
         # The two line display setting is used for anything more than a one-line
         # display. For a 4 x 20 display, for example, it behaves logically as if
         # it were two lines of 40 characters. The first and third line are
-        # contiguous (a single "logical" line), and the second and and fourth
-        # lines are contiguous. This causes some suprising results when moving
+        # contiguous (a single "logical" line), as are the second and and fourth
+        # lines. This causes some suprising results when wrapping text or moving
         # past the ends of lines.
         if self._display_height == 1:
             command |= N_1_LINE
         else:
             command |= N_2_LINES
         # Set 4 bit mode
-        self._lcd_write_byte(0, 0b001_0010)
+        self._lcd_write_byte(0, 0b0001_0010)
+        # Set the function-set bits
         self._write_command(command)
 
     def _set_display_mode(self):
@@ -275,136 +281,27 @@ class LCD(list):
         # Write the command
         self._write_command(display_mode)
 
-    def _truncate(self, text: str, width: int):
-        """
-        Truncate a line of text to fit in the display. The truncation is done
-        according to the current mode.
-        """
+    def _clear_framebuffer(self):
+        for line in range(self._display_height):
+            self._framebuffer[line] = " " * self._display_width
 
-        # The string or character to use to mark the truncation
-        ellipsis = chr(2)
-
-        if len(text) <= width:
-            # Short strings get padded with spaces to fit the display
-            text += " " * (width - len(text))
-        elif self._truncate_mode == self.TruncateMode.TRUNCATE:
-            # Truncate the text to the display width
-            text = text[:width]
-        elif self._truncate_mode == self.TruncateMode.ELLIPSIS_END:
-            # Cut the end of the string and append the ellipses
-            text = text[: width - len(ellipsis)] + "..."
-        elif self._truncate_mode == self.TruncateMode.ELLIPSIS_MIDDLE:
-            # Show the start and end of the string with ellipses in the middle
-            middle = width / 2
-            # Round up the length of the first chunk
-            first = text[: round(middle + 0.1)]
-            # Round down the length of the last chunk
-            last = text[-(round(middle - 0.1) - len(ellipsis)) :]
-            text = first + ellipsis + last
-        elif self._truncate_mode == self.TruncateMode.SCROLL:
-            raise NotImplementedError("Scroll mode not implemented")
-        else:
-            raise ValueError("Unknown truncation mode")
-
-        return text
-
-    def define_custom_character(self, code: int, bitmap: list[int]):
-        """
-        Store the bitmap for a custom character in the character generator RAM.
-        See page 13 and table (page 19) of the HD44780 datasheet.
-
-        Args:
-            code: The character code. Must be between 0 and 7 (eight characters
-                  can be defined).
-            bitmap: A list of integers defining the pixels in the character.
-        """
-
-        if not 0 <= code < 8:
-            raise ValueError("The code for a custom character must be between 0 and 7.")
-        if len(bitmap) != 8:
-            raise ValueError("The bitmap for a custom character must have eight rows.")
-
-        for row, bits in enumerate(bitmap):
-            address = code << 3 | row
-            self._write_command(LCD._Commands.SET_CGRAM_ADDRESS | address)
-            self._write_data(bits)
-
-    #
-    # User level functions
-    #
-
-    def display_on(self, on: bool):
-        """
-        Turn the display on or off.
-
-        Args:
-            on: If set to True, the display will be on. Otherwise, the
-                display will be blanked. (The data is preserved and will be
-                visible when the display is turned on again).
-        """
-
-        self._display_on = on
-        self._set_display_mode()
-
-    def set_cursor(self, style: LCD.Cursor):
-        """
-        Select the type of cursor to be displayed. Select underline,
-        blinking, or no cursor.
-
-        Args:
-            style: Specifies the type of cursor to use.
-        """
-
-        # Set the appropriate flags for the type of cursor
-        if style == LCD.Cursor.NONE:
-            # Turn the underline cursor on or off.
-            self._cursor_on = False
-            self._blink_on = False
-        elif style == LCD.Cursor.BLINK:
-            self._cursor_on = False
-            self._blink_on = True
-        elif style == LCD.Cursor.UNDERSCORE:
-            self._cursor_on = True
-            self._blink_on = False
-
-        # Apply those settings
-        self._set_display_mode()
-
-    def backlight_on(self, on: bool):
-        """
-        Turn the backlight on or off.
-
-        Args:
-            on: If set to True, the backlight will be on.
-        """
-
-        self._backlight = on
-        self._write_command(0)
-
-    def clear_display(self):
+    def _clear_display(self):
         """
         Clear the display. The cursor is set to the home position (0, 0).
         """
 
         self._write_command(self._Commands.CLEAR_DISPLAY)
+        self._clear_framebuffer()
         sleep(0.5)
 
-    def home(self):
-        """
-        Return the cursor to the home position (0, 0) and undo any shifts of
-        the display.
-        """
-
-        self._write_command(self._Commands.RETURN_HOME)
-        sleep(0.0015)
-
-    def move_to(self, line: int, position: int):
+    def _set_display_address(self, line: int, position: int):
         """
         Set the cursor to a given position.
 
         Args:
             line: The line number to move to. Line numbers start from 0.
             position: The character position to move to, starting from 0.
+
         Raises:
             ValueError: If either the line number or character position are out
                         of range.
@@ -429,26 +326,10 @@ class LCD(list):
         # Set the current display memory address
         self._write_command(LCD._Commands.SET_DDRAM_ADDRESS | address)
 
-    def print(self, s: str):
-        """
-        Write text to the display.
 
-        Args:
-            s: The string to write.
+    def _print_at(self, line: int, s: str):
         """
-
-        # Note that it is valid to write past the line; it will wrap round
-        # to the next line. This may be undesirable in the case of a
-        # four-line display where the continuation of a line is not the next
-        # line, but the one after.
-        for c in s:
-            # Write the character to the data memory
-            self._write_data(ord(c) & 0xFF)
-
-    def print_at(self, line: int, position: int, s: str):
-        """
-        Print text at a specified location. Just a shortcut for
-        [`move_to()`][i2c_lcd.LCD.move_to] and [`print()`][i2c_lcd.LCD.print].
+        Print text at a specified location.
 
         Args:
             line: The line number to write to (lines are numbered from 0).
@@ -456,79 +337,60 @@ class LCD(list):
             s: The string to write.
         """
 
-        self.move_to(line, position)
-        self.print(s)
+        # Only write to the display if the string is different from the current
+        # displayed text
+        if s == self._framebuffer[line]:
+            return
 
-    def clear_line(self, line: int, character: str = " "):
+        position = 0
+        self._set_display_address(line, position)
+        # Note that it is valid to write past the line; it will wrap round
+        # to the next line. This may be undesirable in the case of a
+        # four-line display where the continuation of a line is not the next
+        # line, but the one after.
+        for ch in bytearray(s, "ascii"):
+            # Write the character to the data memory
+            self._write_data(ch)
+            # Increment position
+            position += 1
+            # Don't go outside the diplay window
+            if position >= self._display_width:
+                break
+        self._framebuffer[line] = s
+
+
+    def _truncate(self, text: str, width: int):
         """
-        Erase the contents of a line.
-
-        Args:
-            line: The line number to clear. Line numbers start from zero.
-            character: The character to use to overwrite the current content.
-                       Defaults to a space.
-        """
-
-        # Set the cursor to the start of the line
-        self.move_to(line, 0)
-        # Fill the line
-        for _ in range(self._display_width):
-            self._write_data(ord(character) & 0xFF)
-        # Set the cursor back to the start of the line
-        self.move_to(line, 0)
-
-    def update(self, line: int):
-        """
-        Update the LCD to display the contents of the textbuffer, starting at
-        `line`.
-
-        Args:
-            line: The line number in the text buffer to display.
+        Truncate a line of text to fit in the display. The truncation is done
+        according to the current mode.
         """
 
-        text_width = self._display_width - 1
-        margin = 1
+        # The string or character to use to mark the truncation
+        ellipsis = chr(2) + chr(2)
 
-        if line > 0:
-            up = chr(0)
-        else:
-            up = " "
-        if line + self._display_height < len(self):
-            down = chr(1)
-        else:
-            down = " "
-
-        if (line + self._display_height) < 0 or line >= len(self):
-            # Skip updating if nothing will be displayed
-            self.clear_display()
-            print(f"|{' '*margin}{'.' * text_width}|")
-        else:
-            print(f"|{'-' * self._display_width}|")
-
-            for i in range(self._display_height):
-                index = line + i
-                if 0 <= index < len(self):
-                    t = self._truncate(self[index], text_width)
-                    self.print_at(i, margin, t)
-                    print(f"|{' '*margin}{t}|")
-                else:
-                    self.clear_line(i)
-                    print(f"|{' ' * self._display_width}|")
-            print(f"|{'-' * self._display_width}|")
-
-        self.print_at(0, 0, up)
-        self.print_at(self._display_height - 1, 0, down)
-
-    def set_truncate_mode(self, mode: LCD.TruncateMode):
-        """
-        Set the truncate mode to be used when displaying the text buffer on the
-        LCD.
-        """
-
-        if self._truncate_mode == self.TruncateMode.SCROLL:
+        if len(text) <= width:
+            # Short strings get padded with spaces to fit the display
+            text += " " * (width - len(text))
+        elif self._truncate_mode == self.TruncateMode.TRUNCATE:
+            # Truncate the text to the display width
+            text = text[:width]
+        elif self._truncate_mode == self.TruncateMode.ELLIPSIS_END:
+            # Cut the end of the string and append the ellipses
+            text = text[: width - len(ellipsis)] + "..."
+        elif self._truncate_mode == self.TruncateMode.ELLIPSIS_MIDDLE:
+            # Show the start and end of the string with ellipses in the middle
+            middle = width / 2
+            # Round up the length of the first chunk
+            first = text[: round(middle + 0.1)]
+            # Round down the length of the last chunk
+            last = text[-(round(middle - 0.1) - len(ellipsis)) :]
+            text = first + ellipsis + last
+        elif self._truncate_mode == self.TruncateMode.SCROLL:
             raise NotImplementedError("Scroll mode not implemented")
+        else:
+            raise ValueError("Unknown truncation mode")
 
-        self._truncate_mode = mode
+        return text
 
     #
     # Functions to access the I2C interface
@@ -602,10 +464,6 @@ class LCD(list):
         # De-assert the Enable bit to complete the write
         self._i2c_write(data)
 
-    #
-    # Functions to access the I2C interface
-    #
-
     def _i2c_write(self, data: int):
         """
         Write one byte to the I2C address.
@@ -625,23 +483,163 @@ class LCD(list):
                     value=data,
                 )
 
+    #
+    # User level functions
+    #
+
+    def define_custom_character(self, code: int, bitmap: list[int]):
+        """
+        Store the bitmap for a custom character in the character generator RAM.
+        See page 13 and table (page 19) of the HD44780 datasheet.
+
+        Args:
+            code: The character code. Must be between 0 and 7 (eight characters
+                  can be defined).
+            bitmap: A list of integers defining the pixels in the character.
+        """
+
+        if not 0 <= code < 8:
+            raise ValueError("The code for a custom character must be between 0 and 7.")
+        if len(bitmap) != 8:
+            raise ValueError("The bitmap for a custom character must have eight rows.")
+
+        for row, bits in enumerate(bitmap):
+            address = code << 3 | row
+            self._write_command(LCD._Commands.SET_CGRAM_ADDRESS | address)
+            self._write_data(bits)
+
+    def display_on(self, on: bool):
+        """
+        Turn the display on or off.
+
+        Args:
+            on: If set to True, the display will be on. Otherwise, the
+                display will be blanked. (The data is preserved and will be
+                visible when the display is turned on again).
+        """
+
+        self._display_on = on
+        self._set_display_mode()
+
+    def set_cursor(self, style: LCD.Cursor):
+        """
+        Select the type of cursor to be displayed. Select underline,
+        blinking, or no cursor.
+
+        Args:
+            style: Specifies the type of cursor to use.
+        """
+
+        # Set the appropriate flags for the type of cursor
+        if style == LCD.Cursor.NONE:
+            # Turn the underline cursor on or off.
+            self._cursor_on = False
+            self._blink_on = False
+        elif style == LCD.Cursor.BLINK:
+            self._cursor_on = False
+            self._blink_on = True
+        elif style == LCD.Cursor.UNDERSCORE:
+            self._cursor_on = True
+            self._blink_on = False
+
+        # Apply those settings
+        self._set_display_mode()
+
+    def backlight_on(self, on: bool):
+        """
+        Turn the backlight on or off.
+
+        Args:
+            on: If set to True, the backlight will be on.
+        """
+
+        self._backlight = on
+        self._write_command(0)
+
+
+    def show(self, start_line: int):
+        """
+        Update the LCD to display the contents of the text buffer, starting at
+        `line`.
+
+        Args:
+            start_line: The line number in the text buffer to display.
+        """
+
+        if start_line > 0:
+            up = chr(0)
+        else:
+            up = " "
+        if start_line + self._display_height < len(self.data):
+            down = chr(1)
+        else:
+            down = " "
+
+        if (start_line + self._display_height) < 0 or start_line > len(self.data):
+            # Skip updating if nothing will be displayed
+            ##self.clear_display()
+            print(f"|{'.' * self._display_width}|")
+        else:
+            print(f"|{'-' * self._display_width}|")
+
+            for display_line in range(self._display_height):
+                if not self._scroll_bar:
+                    prefix = ""
+                elif display_line == 0:
+                    prefix = up
+                elif display_line == self._display_height - 1:
+                    prefix = down
+                else:
+                    prefix = " "
+
+                text_index = start_line + display_line
+                if 0 <= text_index < len(self.data):
+                    text = prefix + self.data[text_index]
+                    text = self._truncate(text, self._display_width)
+                    self._print_at(display_line, text)
+                    print(f"|{text}|")
+                else:
+                    blank_line = " " * (self._display_width - len(prefix))
+                    self._print_at(display_line, prefix + blank_line)
+                    print(f"|{' ' * self._display_width}|")
+            print(f"|{'-' * self._display_width}|")
+
+
+    def set_truncate_mode(self, mode: LCD.TruncateMode):
+        """
+        Set the truncate mode to be used when displaying the text buffer on the
+        LCD.
+        """
+
+        if self._truncate_mode == self.TruncateMode.SCROLL:
+            raise NotImplementedError("Scroll mode not implemented")
+
+        self._truncate_mode = mode
+
+    def assign(self, text: Iterable):
+        """
+        Assign new data to the text list.
+        """
+        self.data = list(text)
+        self._scroll_bar = len(self.data) > self._display_height
+
 
 if __name__ == "__main__":
 
     text = [
-        "Phasellus id purus a nisl eleifend suscipit feugiat semper ante.",
-        "Praesent gravida quam non mollis suscipit.",
+        "Phasellus id purus a nisl eleifend suscipit feugiat semper ante",
+        "Praesent gravida quam non mollis suscipit",
         "Blank line:",
         "",
         "1234567890123456789",
         "12345678901234567890",
         "123456789012345678901",
-        "Nullam a tellus rutrum, congue lectus et, feugiat lacus.",
-        # "Nam id mauris egestas neque imperdiet gravida.",
-        # "Etiam a nunc cursus odio placerat ultricies nec et ligula.",
-        # "Ut a dui ut justo commodo pellentesque eget sed justo.",
-        # "Praesent pellentesque neque euismod massa rutrum iaculis.",
-        # "Fusce at tortor a lacus malesuada placerat.",
+        "Nullam a tellus rutrum, congue lectus et, feugiat lacus",
+        # "Nam id mauris egestas neque imperdiet gravida",
+        # "Etiam a nunc cursus odio placerat ultricies nec et ligula",
+        # "Ut a dui ut justo commodo pellentesque eget sed justo",
+        # "Praesent pellentesque neque euismod massa rutrum iaculis",
+        # "Fusce at tortor a lacus malesuada placerat",
     ]
 
     chars = [
@@ -670,23 +668,24 @@ if __name__ == "__main__":
             0b00000,
             0b00000,
             0b00000,
-            0b10101,
+            0b11011,
             0b00000,
             0b00000,
             0b00000,
         ],
     ]
 
-    lcd = LCD(text)
+    lcd = LCD()
+    lcd.assign(text)
 
     for n, bitmap in enumerate(chars):
         lcd.define_custom_character(n, bitmap)
 
-    # t.insert(5, "Line 4a Quisque elementum magna a dignissim tristique.")
+    lcd.insert(5, "Inserted: Quisque elementum magna a dignissim tristique.")
 
     lcd.set_truncate_mode(LCD.TruncateMode.ELLIPSIS_MIDDLE)
     for i in range(-4, len(text) + 5):
-        lcd.update(i)
+        lcd.show(i)
         sleep(0.8)
     lcd.display_on(False)
     lcd.backlight_on(False)
