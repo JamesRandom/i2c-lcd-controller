@@ -1,3 +1,4 @@
 smbus2
 mkdocs
 mkdocstrings[python]
+gpiozero

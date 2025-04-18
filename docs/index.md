@@ -32,13 +32,11 @@ would have used it, instead of writing my own code, if I had seen it sooner.
 
 **To do list:**
 
-* Support newline characters in text (and maybe an explicit newline method)
 * Cache the display contents in a framebuffer so only changes to the content
-    need to be written to the display
-* With that, could make the display a window onto a larger virtual screen to
-    enable more efficient vertical and horizontal scrolling of text (including
-    scrolling single lines)
-* Add support for custom characters
+    need to be written to the display?
+
+* Scroll single lines if too long for the display
+
 
 ## Installation
 

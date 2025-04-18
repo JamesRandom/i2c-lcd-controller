@@ -48,9 +48,9 @@ from __future__ import annotations
 import enum
 from collections import UserList
 from enum import Enum, IntEnum
-from logging import debug, warning
+from logging import debug, info, warning
 from time import sleep
-from typing import Iterable
+from typing import Any, Callable, Iterable, SupportsIndex
 
 
 # pylint: disable=too-many-instance-attributes
@@ -200,8 +200,8 @@ class LCD(UserList):
         self._blink_on = False
         self._truncate_mode = self.TruncateMode.TRUNCATE
         self._scroll_bar = len(self.data) > self._display_height
-        # Allocate a frame buffer: an array of lines each containing width characters
-        self._framebuffer:list[str] = ["", "", "", ""]
+        self._current_start_line = 0
+        # Flag to indicate that the display may be out of date wrt the data
 
         # The LCD controller needs at least 15ms after Vcc rises to 4.5V and
         # 40ms after Vcc rises above 2.7V. So wait even though this probably
@@ -212,6 +212,48 @@ class LCD(UserList):
         self._function_set()
         self._set_display_mode()
         self._clear_display()
+        self._redraw()
+
+    #
+    # Intercept standard `list` update methods to redraw the display if the list
+    # content is changed.
+    #
+
+    def append(self, item: str):
+        super().append(item)
+        self._redraw()
+
+    def extend(self, other: Iterable):
+        super().extend(other)
+        self._redraw()
+
+    def insert(self, i: int, item):
+        super().insert(i, item)
+        self._redraw()
+
+    def remove(self, item):
+        super().remove(item)
+        self._redraw()
+
+    def pop(self, i: int = -1):
+        super().pop(i)
+        self._redraw()
+
+    def sort(self, *, key: Callable|None = None, reverse: bool = False):
+        super().sort(key=key, reverse=reverse)
+        self._redraw()
+
+    def reverse(self):
+        super().reverse()
+        self._redraw()
+
+    def __setitem__(self, i: SupportsIndex, item):
+        super().__setitem__(i, item)
+        self._redraw()
+
+    def __delitem__(self, i: SupportsIndex | slice[Any, Any, Any]):
+        super().__delitem__(i)
+        self._redraw()
 
     def _function_set(self):
         """
@@ -281,17 +323,12 @@ class LCD(UserList):
         # Write the command
         self._write_command(display_mode)
 
-    def _clear_framebuffer(self):
-        for line in range(self._display_height):
-            self._framebuffer[line] = " " * self._display_width
-
     def _clear_display(self):
         """
         Clear the display. The cursor is set to the home position (0, 0).
         """
 
         self._write_command(self._Commands.CLEAR_DISPLAY)
-        self._clear_framebuffer()
         sleep(0.5)
 
     def _set_display_address(self, line: int, position: int):
@@ -326,7 +363,6 @@ class LCD(UserList):
         # Set the current display memory address
         self._write_command(LCD._Commands.SET_DDRAM_ADDRESS | address)
 
-
     def _print_at(self, line: int, s: str):
         """
         Print text at a specified location.
@@ -336,11 +372,6 @@ class LCD(UserList):
             position: The character position in the line to start at.
             s: The string to write.
         """
-
-        # Only write to the display if the string is different from the current
-        # displayed text
-        if s == self._framebuffer[line]:
-            return
 
         position = 0
         self._set_display_address(line, position)
@@ -356,8 +387,48 @@ class LCD(UserList):
             # Don't go outside the diplay window
             if position >= self._display_width:
                 break
-        self._framebuffer[line] = s
 
+    def _redraw(self):
+
+        if self._current_start_line > 0:
+            up = "^"  # chr(0)
+        else:
+            up = " "
+        if self._current_start_line + self._display_height < len(self.data):
+            down = "v"  # chr(1)
+        else:
+            down = " "
+
+        if (
+            self._current_start_line + self._display_height
+        ) < 0 or self._current_start_line > len(self.data):
+            # Skip updating if nothing will be displayed
+            ##self.clear_display()
+            info(f"|{'.' * self._display_width}|")
+        else:
+            info(f"|{'-' * self._display_width}|")
+
+            for display_line in range(self._display_height):
+                if not self._scroll_bar:
+                    prefix = ""
+                elif display_line == 0:
+                    prefix = up
+                elif display_line == self._display_height - 1:
+                    prefix = down
+                else:
+                    prefix = " "
+
+                text_index = self._current_start_line + display_line
+                if 0 <= text_index < len(self.data):
+                    text = prefix + self.data[text_index]
+                    text = self._truncate(text, self._display_width)
+                    self._print_at(display_line, text)
+                    info(f"|{text}|")
+                else:
+                    blank_line = " " * (self._display_width - len(prefix))
+                    self._print_at(display_line, prefix + blank_line)
+                    info(f"|{' ' * self._display_width}|")
+            info(f"|{'-' * self._display_width}|")
 
     def _truncate(self, text: str, width: int):
         """
@@ -366,7 +437,7 @@ class LCD(UserList):
         """
 
         # The string or character to use to mark the truncation
-        ellipsis = chr(2) + chr(2)
+        ellipsis = ".."  # chr(2) + chr(2)
 
         if len(text) <= width:
             # Short strings get padded with spaces to fit the display
@@ -473,7 +544,9 @@ class LCD(UserList):
         """
 
         try:
+            # pylint: disable=import-outside-toplevel
             from smbus2 import SMBus
+        # pylint: disable=bare-except
         except:
             pass
         else:
@@ -556,54 +629,23 @@ class LCD(UserList):
         self._backlight = on
         self._write_command(0)
 
-
     def show(self, start_line: int):
         """
         Update the LCD to display the contents of the text buffer, starting at
         `line`.
 
         Args:
-            start_line: The line number in the text buffer to display.
+            start_line: The line number in the text buffer to display. Default
+                        is zero; i.e. display the first N lines.
         """
 
-        if start_line > 0:
-            up = chr(0)
-        else:
-            up = " "
-        if start_line + self._display_height < len(self.data):
-            down = chr(1)
-        else:
-            down = " "
+        # Don't update if the displayed line has not changed.
+        if self._current_start_line == start_line:
+            return
 
-        if (start_line + self._display_height) < 0 or start_line > len(self.data):
-            # Skip updating if nothing will be displayed
-            ##self.clear_display()
-            print(f"|{'.' * self._display_width}|")
-        else:
-            print(f"|{'-' * self._display_width}|")
+        self._current_start_line = start_line
 
-            for display_line in range(self._display_height):
-                if not self._scroll_bar:
-                    prefix = ""
-                elif display_line == 0:
-                    prefix = up
-                elif display_line == self._display_height - 1:
-                    prefix = down
-                else:
-                    prefix = " "
-
-                text_index = start_line + display_line
-                if 0 <= text_index < len(self.data):
-                    text = prefix + self.data[text_index]
-                    text = self._truncate(text, self._display_width)
-                    self._print_at(display_line, text)
-                    print(f"|{text}|")
-                else:
-                    blank_line = " " * (self._display_width - len(prefix))
-                    self._print_at(display_line, prefix + blank_line)
-                    print(f"|{' ' * self._display_width}|")
-            print(f"|{'-' * self._display_width}|")
-
+        self._redraw()
 
     def set_truncate_mode(self, mode: LCD.TruncateMode):
         """
@@ -622,6 +664,7 @@ class LCD(UserList):
         """
         self.data = list(text)
         self._scroll_bar = len(self.data) > self._display_height
+        self._redraw()
 
 
 if __name__ == "__main__":
@@ -684,8 +727,8 @@ if __name__ == "__main__":
     lcd.insert(5, "Inserted: Quisque elementum magna a dignissim tristique.")
 
     lcd.set_truncate_mode(LCD.TruncateMode.ELLIPSIS_MIDDLE)
-    for i in range(-4, len(text) + 5):
-        lcd.show(i)
+    for n in range(-4, len(text) + 5):
+        lcd.show(n)
         sleep(0.8)
     lcd.display_on(False)
     lcd.backlight_on(False)
